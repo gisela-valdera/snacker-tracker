@@ -1,0 +1,70 @@
+{
+  "entities": {
+    "snack": {
+      "title": "Snack",
+      "description": "A recorded office snack accession in the editorial archive",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60,
+          "description": "Name of the snack (1 to 60 characters)"
+        },
+        "broughtBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40,
+          "description": "First name of the contributor (1 to 40 characters)"
+        },
+        "origin": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60,
+          "description": "Origin country (1 to 60 characters)"
+        },
+        "region": {
+          "type": "string",
+          "maxLength": 60,
+          "description": "Optional city or region (up to 60 characters)"
+        },
+        "dateBroughtIn": {
+          "type": "string",
+          "format": "date",
+          "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$",
+          "description": "Required date the snack was brought in (YYYY-MM-DD)"
+        },
+        "category": {
+          "type": "string",
+          "enum": ["sweet", "savoury", "fruit", "drink", "other"],
+          "description": "Snack classification category"
+        },
+        "ratingSum": {
+          "type": "number",
+          "description": "Sum of all ratings submitted (running total)"
+        },
+        "ratingCount": {
+          "type": "integer",
+          "description": "Total number of ratings submitted (running count)"
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Optional tasting notes (up to 200 characters)"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of when the snack was logged"
+        }
+      },
+      "required": ["name", "broughtBy", "origin", "dateBroughtIn", "category", "ratingSum", "ratingCount", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/snacks/{snackId}": {
+      "schema": "snack",
+      "description": "Public collection of office snacks with community ratings"
+    }
+  }
+}

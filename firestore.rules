@@ -1,0 +1,105 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidDateString(dateStr) {
+      return dateStr is string && dateStr.matches('^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$');
+    }
+
+    function isValidCategory(cat) {
+      return cat in ['sweet', 'savoury', 'fruit', 'drink', 'other'];
+    }
+
+    function isValidRatingIncrement(inc) {
+      return inc == 0.5 || inc == 1 || inc == 1.0 || inc == 1.5
+        || inc == 2 || inc == 2.0 || inc == 2.5
+        || inc == 3 || inc == 3.0 || inc == 3.5
+        || inc == 4 || inc == 4.0 || inc == 4.5
+        || inc == 5 || inc == 5.0;
+    }
+
+    function isValidSnackCreate(data) {
+      return data.keys().hasAll(['name', 'broughtBy', 'origin', 'dateBroughtIn', 'category', 'ratingSum', 'ratingCount', 'createdAt'])
+        && data.keys().hasOnly(['name', 'broughtBy', 'origin', 'dateBroughtIn', 'category', 'ratingSum', 'ratingCount', 'createdAt', 'region', 'notes'])
+        // name: string, 1 to 60 characters
+        && data.name is string
+        && data.name.size() >= 1
+        && data.name.size() <= 60
+        // broughtBy: string (first name), 1 to 40 characters
+        && data.broughtBy is string
+        && data.broughtBy.size() >= 1
+        && data.broughtBy.size() <= 40
+        // origin: string (country), 1 to 60 characters
+        && data.origin is string
+        && data.origin.size() >= 1
+        && data.origin.size() <= 60
+        // dateBroughtIn: valid YYYY-MM-DD date string
+        && isValidDateString(data.dateBroughtIn)
+        // category: 'sweet', 'savoury', 'fruit', 'drink', or 'other'
+        && data.category is string
+        && isValidCategory(data.category)
+        // Initial ratingSum and ratingCount must both be 0
+        && (data.ratingSum == 0 || data.ratingSum == 0.0)
+        && data.ratingCount == 0
+        // createdAt: server timestamp
+        && data.createdAt == request.time
+        // optional region: string up to 60 characters if provided
+        && (!('region' in data) || (data.region is string && data.region.size() <= 60))
+        // optional notes: string up to 200 characters if provided
+        && (!('notes' in data) || (data.notes is string && data.notes.size() <= 200));
+    }
+
+    function isValidSnackRatingUpdate() {
+      let isOnlyRatingKeysChanged = incoming().diff(existing()).affectedKeys().hasOnly(['ratingSum', 'ratingCount']);
+      let prevCount = ('ratingCount' in existing()) ? existing().ratingCount : 0;
+      let prevSum = ('ratingSum' in existing()) ? existing().ratingSum : 0;
+      let nextCount = incoming().ratingCount;
+      let nextSum = incoming().ratingSum;
+      let countDelta = nextCount - prevCount;
+      let sumDelta = nextSum - prevSum;
+
+      return isOnlyRatingKeysChanged
+        && countDelta == 1
+        && isValidRatingIncrement(sumDelta);
+    }
+
+    // Default deny catch-all for any unmatched paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Connectivity test document
+    match /test/{testId} {
+      allow read: if true;
+    }
+
+    // Snacks collection rules
+    match /snacks/{snackId} {
+      // Public read: anyone with link can view all snacks
+      allow read: if true;
+
+      // Public create with strict schema validation
+      allow create: if isValidId(snackId) && isValidSnackCreate(incoming());
+
+      // Public rating update: atomic increment of ratingCount by 1 and ratingSum by 0.5..5.0
+      allow update: if isValidId(snackId) && isValidSnackRatingUpdate();
+
+      // Deny all deletes
+      allow delete: if false;
+    }
+  }
+}

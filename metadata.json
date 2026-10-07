@@ -1,0 +1,8 @@
+{
+  "name": "Snack Tracker — Editorial & Swiss-Brutalist Archive",
+  "description": "Curating department culinary culture and global origin archive with a Swiss-brutalist editorial aesthetic.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
