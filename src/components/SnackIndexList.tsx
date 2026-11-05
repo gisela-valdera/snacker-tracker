@@ -1,6 +1,7 @@
 import React from 'react';
 import { Snack } from '../types.ts';
 import { StarRating } from './StarRating.tsx';
+import { EmptyState } from './EmptyState.tsx';
 
 interface SnackIndexListProps {
   snacks: Snack[];
@@ -8,6 +9,8 @@ interface SnackIndexListProps {
   onOpenAddModal: () => void;
   userRatings: Record<string, number>;
   onRateSnack: (snackId: string, rating: number) => Promise<void>;
+  legendarySnackIds?: Set<string>;
+  isTableBumped?: boolean;
 }
 
 export const SnackIndexList: React.FC<SnackIndexListProps> = ({
@@ -16,6 +19,8 @@ export const SnackIndexList: React.FC<SnackIndexListProps> = ({
   onOpenAddModal,
   userRatings,
   onRateSnack,
+  legendarySnackIds = new Set(),
+  isTableBumped = false,
 }) => {
   const formatDateDDMMYYYY = (dateStr?: string): string => {
     if (!dateStr) return '—';
@@ -28,28 +33,13 @@ export const SnackIndexList: React.FC<SnackIndexListProps> = ({
   };
 
   if (snacks.length === 0) {
-    return (
-      <div className="border border-[#161616] bg-[#161616]/5 p-8 md:p-14 text-center my-6">
-        <div className="font-mono-tabular text-xs uppercase tracking-widest opacity-60 mb-3">
-          Archive Registry // Status: Clean Slate
-        </div>
-        <h3 className="text-2xl md:text-3xl font-black uppercase mb-3">
-          No snacks logged in the archive yet
-        </h3>
-        <p className="text-base max-w-md mx-auto opacity-80 mb-6 leading-relaxed">
-          The shared Firestore repository is active and waiting for its inaugural entry. Bring the culture of your department to life by logging the first snack.
-        </p>
-        <button onClick={onOpenAddModal} className="brutalist-btn">
-          + Add The First Snack
-        </button>
-      </div>
-    );
+    return <EmptyState mode="inaugural" onOpenAddModal={onOpenAddModal} />;
   }
 
   return (
     <div className="w-full">
       {/* Table Column Headers */}
-      <div className="grid grid-cols-[36px_1.4fr_180px] md:grid-cols-[44px_1.8fr_100px_1fr_200px] lg:grid-cols-[50px_2fr_110px_1.1fr_1fr_220px] py-2 px-3 text-[11px] md:text-[12px] font-mono-tabular uppercase tracking-wider opacity-60 border-b border-[#161616]/40 select-none">
+      <div className="grid grid-cols-[36px_1.4fr_180px] md:grid-cols-[44px_1.8fr_100px_1fr_200px] lg:grid-cols-[50px_2fr_110px_1.1fr_1fr_220px] py-2 px-3 text-[11px] md:text-[12px] font-mono-tabular uppercase tracking-wider opacity-60 border-b border-[var(--border-subtle)] select-none">
         <div>Ref</div>
         <div>Title & Category</div>
         <div className="hidden md:block">Brought In</div>
@@ -59,10 +49,14 @@ export const SnackIndexList: React.FC<SnackIndexListProps> = ({
       </div>
 
       {/* Rows */}
-      <div className="border-b border-[#161616]">
+      <div className="border-b border-[var(--border-color)]">
         {snacks.map((snack, idx) => {
           const indexCode = `S${String(idx + 1).padStart(2, '0')}`;
           const userRating = userRatings[snack.id] ?? null;
+          const isLegendary =
+            legendarySnackIds.has(snack.id) ||
+            ((snack.ratingCount ?? 0) >= 2 &&
+              (snack.ratingSum ?? 0) / (snack.ratingCount ?? 1) === 5);
 
           return (
             <div
@@ -79,10 +73,15 @@ export const SnackIndexList: React.FC<SnackIndexListProps> = ({
                   }
                 }
               }}
-              className="snack-row group"
+              style={{
+                animationDelay: isTableBumped ? `${(idx % 12) * 35}ms` : undefined,
+              }}
+              className={`snack-row group relative transition-colors ${
+                isLegendary ? 'legendary-gold-shimmer' : ''
+              } ${isTableBumped ? 'table-bump-wobble' : ''}`}
             >
               {/* Ref Number */}
-              <div className="font-mono-tabular text-[12px] md:text-[14px] font-bold opacity-80 group-hover:opacity-100">
+              <div className="font-mono-tabular text-[12px] md:text-[14px] font-bold opacity-80 group-hover:opacity-100 flex items-center gap-1">
                 {indexCode}
               </div>
 
@@ -91,9 +90,14 @@ export const SnackIndexList: React.FC<SnackIndexListProps> = ({
                 <span className="font-bold text-[16px] md:text-[18px] tracking-tight block md:inline mr-2">
                   {snack.name}
                 </span>
-                <span className="text-[11px] uppercase tracking-wider font-mono-tabular opacity-60 group-hover:opacity-100">
+                <span className="text-[11px] uppercase tracking-wider font-mono-tabular opacity-60 group-hover:opacity-100 mr-2">
                   [{snack.category}]
                 </span>
+                {isLegendary && (
+                  <span className="snack-of-legend-badge inline-flex align-middle my-0.5">
+                    ★ Snack of legend
+                  </span>
+                )}
                 <div className="md:hidden text-[11px] font-mono-tabular opacity-60 mt-0.5">
                   {formatDateDDMMYYYY(snack.dateBroughtIn)} · {snack.origin} · By {snack.broughtBy}
                 </div>

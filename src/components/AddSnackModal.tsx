@@ -159,12 +159,12 @@ export const AddSnackModal: React.FC<AddSnackModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
       <div 
-        className="w-full max-w-xl max-h-[92vh] overflow-y-auto bg-[#E5E4DF] text-[#161616] border-2 border-[#161616] shadow-[8px_8px_0px_#161616] p-6 md:p-8"
+        className="w-full max-w-xl max-h-[92vh] overflow-y-auto bg-[var(--card-bg)] text-[var(--fg)] border-2 border-[var(--border-color)] shadow-[var(--overlay-shadow)] p-6 md:p-8"
         role="dialog"
         aria-modal="true"
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#161616] pb-3 mb-6 font-mono-tabular text-xs">
+        <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3 mb-6 font-mono-tabular text-xs">
           <div className="font-bold uppercase tracking-wider">
             Curatorial Intake // New Snack Entry
           </div>
@@ -179,7 +179,7 @@ export const AddSnackModal: React.FC<AddSnackModalProps> = ({
 
         {/* Cooldown Alert */}
         {cooldownRemaining > 0 && (
-          <div className="p-3 mb-4 bg-[#161616] text-[#E5E4DF] text-xs font-mono-tabular flex items-center justify-between">
+          <div className="p-3 mb-4 bg-[var(--fg)] text-[var(--bg)] text-xs font-mono-tabular flex items-center justify-between">
             <span>COOLDOWN ACTIVE: Anti-spam rate limit</span>
             <span className="font-bold">{cooldownRemaining}s remaining</span>
           </div>
@@ -187,7 +187,7 @@ export const AddSnackModal: React.FC<AddSnackModalProps> = ({
 
         {/* Validation Error Banner */}
         {error && (
-          <div className="p-3 mb-4 border border-[#161616] bg-red-50 text-red-950 text-xs font-mono-tabular flex items-center justify-between">
+          <div className="p-3 mb-4 border border-[var(--border-color)] bg-red-100/90 text-red-950 dark:bg-red-950/60 dark:text-red-200 dark:border-red-700 text-xs font-mono-tabular flex items-center justify-between">
             <span>[ERROR] {error}</span>
             <button
               onClick={() => setError(null)}
@@ -244,7 +244,7 @@ export const AddSnackModal: React.FC<AddSnackModalProps> = ({
             <div>
               <div className="flex justify-between items-center text-[11px] font-mono-tabular uppercase tracking-wider opacity-70 mb-1">
                 <label htmlFor="date-brought-in">Date Brought In *</label>
-                <span className="font-bold text-[#161616]">
+                <span className="font-bold text-[var(--fg)]">
                   {formattedDatePreview ? `[${formattedDatePreview}]` : ''}
                 </span>
               </div>
@@ -316,11 +316,11 @@ export const AddSnackModal: React.FC<AddSnackModalProps> = ({
               }}
               className="brutalist-input bg-transparent cursor-pointer"
             >
-              <option value="sweet" className="bg-[#E5E4DF] text-[#161616]">Sweet</option>
-              <option value="savoury" className="bg-[#E5E4DF] text-[#161616]">Savoury</option>
-              <option value="fruit" className="bg-[#E5E4DF] text-[#161616]">Fruit</option>
-              <option value="drink" className="bg-[#E5E4DF] text-[#161616]">Drink</option>
-              <option value="other" className="bg-[#E5E4DF] text-[#161616]">Other</option>
+              <option value="sweet" className="bg-[var(--bg)] text-[var(--fg)]">Sweet</option>
+              <option value="savoury" className="bg-[var(--bg)] text-[var(--fg)]">Savoury</option>
+              <option value="fruit" className="bg-[var(--bg)] text-[var(--fg)]">Fruit</option>
+              <option value="drink" className="bg-[var(--bg)] text-[var(--fg)]">Drink</option>
+              <option value="other" className="bg-[var(--bg)] text-[var(--fg)]">Other</option>
             </select>
           </div>
 
@@ -343,7 +343,7 @@ export const AddSnackModal: React.FC<AddSnackModalProps> = ({
             />
           </div>
 
-          <div className="flex items-center justify-between pt-4 border-t border-[#161616]">
+          <div className="flex items-center justify-between pt-4 border-t border-[var(--border-color)]">
             <button
               type="button"
               onClick={onClose}

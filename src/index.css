@@ -5,7 +5,29 @@
     --bg: #E5E4DF;
     --bg-hover: #F2F1ED; /* a clean grey lighter than the background */
     --fg: #161616;
+    --fg-muted: rgba(22, 22, 22, 0.6);
+    --border-color: #161616;
+    --border-subtle: rgba(22, 22, 22, 0.25);
+    --card-bg: #E5E4DF;
+    --card-poster-bg: #DEDCD6;
+    --overlay-shadow: 8px 8px 0px #161616;
+    --card-shadow: 4px 4px 0px #161616;
     --trans: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    color-scheme: light;
+  }
+
+  html.dark, :root.dark {
+    --bg: #151514;
+    --bg-hover: #262624; /* a clean grey lighter than the dark canvas */
+    --fg: #F0EFEA; /* crisp off-white chalk text, WCAG AAA readable */
+    --fg-muted: rgba(240, 239, 234, 0.65);
+    --border-color: #F0EFEA;
+    --border-subtle: rgba(240, 239, 234, 0.25);
+    --card-bg: #1C1C1A;
+    --card-poster-bg: #232321;
+    --overlay-shadow: 8px 8px 0px #F0EFEA;
+    --card-shadow: 4px 4px 0px #F0EFEA;
+    color-scheme: dark;
   }
 
   * {
@@ -21,6 +43,7 @@
     margin: 0;
     padding: 0;
     min-height: 100vh;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   ::selection {
@@ -94,7 +117,7 @@
 .filter-btn:hover {
   background-color: var(--bg-hover);
   color: var(--fg);
-  border-color: rgba(22, 22, 22, 0.2);
+  border-color: var(--border-subtle);
 }
 
 .filter-btn.active:hover {
@@ -164,4 +187,132 @@
 .brutalist-btn-outline:hover {
   background: var(--fg);
   color: var(--bg);
+}
+
+/* ==========================================================================
+   INTERACTIVE FEATURES: TABLE BUMP, GOLD SHIMMER, PASSPORT STAMP
+   ========================================================================== */
+
+/* 1. Table Bump Wobble Animation (Triple logo click) */
+@keyframes tableBumpItem {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  15% { transform: translate(-3px, -4px) rotate(-1.5deg); }
+  30% { transform: translate(3px, 2px) rotate(1.2deg); }
+  45% { transform: translate(-2px, -3px) rotate(-0.8deg); }
+  60% { transform: translate(2px, 1px) rotate(0.5deg); }
+  75% { transform: translate(-1px, -1px) rotate(-0.2deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+.table-bump-wobble {
+  animation: tableBumpItem 0.75s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* 2. Perfect Five: Gold Shimmer & Legendary Badge */
+@keyframes goldShimmerSweep {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.legendary-gold-shimmer {
+  position: relative;
+  border-color: #d4af37 !important;
+  box-shadow: 0 0 0 1px #d4af37, 3px 3px 0px rgba(212, 175, 55, 0.45);
+}
+
+.legendary-gold-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(212, 175, 55, 0.28) 45%,
+    rgba(255, 230, 130, 0.4) 50%,
+    rgba(212, 175, 55, 0.28) 55%,
+    transparent 80%
+  );
+  background-size: 250% 100%;
+  animation: goldShimmerSweep 3s infinite linear;
+  z-index: 5;
+}
+
+.snack-of-legend-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #d4af37;
+  color: #161616;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 2px 6px;
+  border: 1px solid #997819;
+  box-shadow: 2px 2px 0px #161616;
+  animation: pulseBadge 2.5s infinite ease-in-out;
+}
+
+@keyframes pulseBadge {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+/* 3. Passport Stamp Animation & Styling */
+@keyframes stampSlam {
+  0% {
+    transform: scale(2.2) rotate(-15deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(0.92) rotate(-5deg);
+    opacity: 1;
+  }
+  80% {
+    transform: scale(1.04) rotate(-6.5deg);
+  }
+  100% {
+    transform: scale(1) rotate(-6deg);
+    opacity: 1;
+  }
+}
+
+.animate-stamp-slam {
+  animation: stampSlam 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.passport-stamp-seal {
+  font-family: 'JetBrains Mono', monospace;
+  border: 2px dashed #b91c1c;
+  color: #b91c1c;
+  background-color: rgba(185, 28, 28, 0.05);
+  box-shadow: inset 0 0 0 1px #b91c1c;
+  mix-blend-mode: multiply;
+}
+
+html.dark .passport-stamp-seal {
+  border-color: #ef4444;
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+  box-shadow: inset 0 0 0 1px #ef4444;
+  mix-blend-mode: screen;
+}
+
+/* 4. Hunger Pangs text bubble */
+@keyframes stomachRumble {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-2px) rotate(-0.5deg); }
+  40% { transform: translateX(3px) rotate(0.5deg); }
+  60% { transform: translateX(-2px) rotate(-0.5deg); }
+  80% { transform: translateX(2px) rotate(0.5deg); }
+}
+
+.rumble-shake {
+  animation: stomachRumble 0.35s ease-in-out infinite;
 }

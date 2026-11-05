@@ -14,6 +14,7 @@ export interface Snack {
   createdAt: any; // Firestore Timestamp or Date
 }
 
-export type ViewMode = 'index' | 'gallery' | 'about';
+export type ViewMode = 'index' | 'gallery' | 'stats' | 'about';
 export type SortField = 'dateBroughtIn' | 'name' | 'origin' | 'rating' | 'ratingCount';
 export type SortDirection = 'asc' | 'desc';
+export type ThemeMode = 'system' | 'light' | 'dark';

@@ -36,7 +36,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   return (
     <div className="mb-8 space-y-4">
       {/* Category Toggles & Search */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-3 border-b border-[#161616]/30">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-3 border-b border-[var(--border-subtle)]">
         <div className="flex flex-wrap items-center gap-1 sm:gap-2 text-[15px] md:text-[17px]">
           {categories.map((cat) => {
             const count = categoryCounts[cat.value] || 0;
@@ -66,7 +66,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Search donor, country, snack..."
-              className="brutalist-input text-[14px] pb-1.5 pt-0 placeholder:text-[#161616]/40"
+              className="brutalist-input text-[14px] pb-1.5 pt-0 placeholder:text-[var(--fg-muted)]"
             />
             {searchQuery && (
               <button

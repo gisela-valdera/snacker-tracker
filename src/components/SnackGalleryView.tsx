@@ -1,6 +1,7 @@
 import React from 'react';
 import { Snack } from '../types.ts';
 import { StarRating } from './StarRating.tsx';
+import { EmptyState } from './EmptyState.tsx';
 
 interface SnackGalleryViewProps {
   snacks: Snack[];
@@ -8,6 +9,8 @@ interface SnackGalleryViewProps {
   onOpenAddModal: () => void;
   userRatings: Record<string, number>;
   onRateSnack: (snackId: string, rating: number) => Promise<void>;
+  legendarySnackIds?: Set<string>;
+  isTableBumped?: boolean;
 }
 
 export const SnackGalleryView: React.FC<SnackGalleryViewProps> = ({
@@ -16,6 +19,8 @@ export const SnackGalleryView: React.FC<SnackGalleryViewProps> = ({
   onOpenAddModal,
   userRatings,
   onRateSnack,
+  legendarySnackIds = new Set(),
+  isTableBumped = false,
 }) => {
   const formatDateDDMMYYYY = (dateStr?: string): string => {
     if (!dateStr) return '—';
@@ -28,22 +33,7 @@ export const SnackGalleryView: React.FC<SnackGalleryViewProps> = ({
   };
 
   if (snacks.length === 0) {
-    return (
-      <div className="border border-[#161616] bg-[#161616]/5 p-8 md:p-14 text-center my-6">
-        <div className="font-mono-tabular text-xs uppercase tracking-widest opacity-60 mb-3">
-          Gallery View // Empty Archive
-        </div>
-        <h3 className="text-2xl md:text-3xl font-black uppercase mb-3">
-          No snacks in the gallery
-        </h3>
-        <p className="text-base max-w-md mx-auto opacity-80 mb-6 leading-relaxed">
-          The archive is waiting for its first shared entry. Add an office snack to start the collection.
-        </p>
-        <button onClick={onOpenAddModal} className="brutalist-btn">
-          + Add First Snack
-        </button>
-      </div>
-    );
+    return <EmptyState mode="inaugural" onOpenAddModal={onOpenAddModal} />;
   }
 
   return (
@@ -51,21 +41,37 @@ export const SnackGalleryView: React.FC<SnackGalleryViewProps> = ({
       {snacks.map((snack, idx) => {
         const indexCode = `S${String(idx + 1).padStart(2, '0')}`;
         const userRating = userRatings[snack.id] ?? null;
+        const isLegendary =
+          legendarySnackIds.has(snack.id) ||
+          ((snack.ratingCount ?? 0) >= 2 &&
+            (snack.ratingSum ?? 0) / (snack.ratingCount ?? 1) === 5);
         
         return (
           <article
             key={snack.id}
             onClick={() => onSelectSnack(snack)}
-            className="border border-[#161616] bg-[#E5E4DF] flex flex-col justify-between cursor-pointer transition-all duration-150 hover:-translate-y-1 hover:shadow-[4px_4px_0px_#161616] group"
+            style={{
+              animationDelay: isTableBumped ? `${(idx % 12) * 40}ms` : undefined,
+            }}
+            className={`border border-[var(--border-color)] bg-[var(--card-bg)] flex flex-col justify-between cursor-pointer transition-all duration-150 hover:-translate-y-1 hover:shadow-[var(--card-shadow)] group relative overflow-hidden ${
+              isLegendary ? 'legendary-gold-shimmer' : ''
+            } ${isTableBumped ? 'table-bump-wobble' : ''}`}
           >
             {/* Top Bar on Card */}
-            <div className="flex items-center justify-between px-3 py-2 border-b border-[#161616] font-mono-tabular text-[12px] bg-[#161616]/5 group-hover:bg-[#F2F1ED] group-hover:text-[#161616] transition-colors">
-              <span className="font-bold">{indexCode} // {snack.origin.toUpperCase()}</span>
+            <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--border-color)] font-mono-tabular text-[12px] bg-[var(--fg)]/5 group-hover:bg-[var(--bg-hover)] group-hover:text-[var(--fg)] transition-colors">
+              <span className="font-bold flex items-center gap-1.5">
+                {indexCode} // {snack.origin.toUpperCase()}
+                {isLegendary && (
+                  <span className="snack-of-legend-badge text-[9px] py-0 px-1">
+                    ★ Legend
+                  </span>
+                )}
+              </span>
               <span>{formatDateDDMMYYYY(snack.dateBroughtIn)}</span>
             </div>
 
             {/* Poster Block */}
-            <div className="relative aspect-[4/3] bg-[#DEDCD6] border-b border-[#161616] overflow-hidden flex flex-col items-center justify-center p-6 text-center">
+            <div className="relative aspect-[4/3] bg-[var(--card-poster-bg)] border-b border-[var(--border-color)] overflow-hidden flex flex-col items-center justify-center p-6 text-center">
               <div className="font-black text-4xl tracking-tighter opacity-20 uppercase mb-2 select-none">
                 {snack.category}
               </div>
@@ -74,8 +80,15 @@ export const SnackGalleryView: React.FC<SnackGalleryViewProps> = ({
                 {snack.region ? ` · ${snack.region}` : ''}
               </span>
               
-              <div className="absolute top-2 right-2 bg-[#161616] text-[#E5E4DF] text-[10px] uppercase font-bold px-2 py-0.5 tracking-wider">
-                {snack.category}
+              <div className="absolute top-2 right-2 flex flex-col items-end gap-1">
+                <div className="bg-[var(--fg)] text-[var(--bg)] text-[10px] uppercase font-bold px-2 py-0.5 tracking-wider">
+                  {snack.category}
+                </div>
+                {isLegendary && (
+                  <div className="snack-of-legend-badge text-[9px]">
+                    ★ Snack of legend
+                  </div>
+                )}
               </div>
             </div>
 
@@ -85,7 +98,7 @@ export const SnackGalleryView: React.FC<SnackGalleryViewProps> = ({
                 <h3 className="text-xl font-bold tracking-tight mb-1 leading-tight group-hover:underline">
                   {snack.name}
                 </h3>
-                <p className="text-xs font-mono-tabular text-[#161616]/70 mb-3">
+                <p className="text-xs font-mono-tabular text-[var(--fg)]/70 mb-3">
                   Donor: {snack.broughtBy} · In: {formatDateDDMMYYYY(snack.dateBroughtIn)}
                 </p>
                 <p className="text-sm line-clamp-3 leading-relaxed opacity-85 mb-3">
@@ -94,7 +107,7 @@ export const SnackGalleryView: React.FC<SnackGalleryViewProps> = ({
               </div>
 
               {/* Card Rating & Footer */}
-              <div className="mt-2 pt-3 border-t border-[#161616]/20 flex flex-col gap-2">
+              <div className="mt-2 pt-3 border-t border-[var(--border-subtle)] flex flex-col gap-2">
                 <div onClick={(e) => e.stopPropagation()}>
                   <StarRating
                     snackId={snack.id}

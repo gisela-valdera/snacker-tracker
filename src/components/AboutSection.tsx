@@ -8,7 +8,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onBackToIndex }) => 
   return (
     <div className="max-w-4xl py-6 space-y-12">
       {/* Kicker */}
-      <div className="flex items-center justify-between border-b border-[#161616] pb-3">
+      <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3">
         <span className="font-mono-tabular text-xs uppercase tracking-widest font-bold">
           Archive Manifesto // Context & Protocol
         </span>
@@ -36,7 +36,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onBackToIndex }) => 
       </div>
 
       {/* Three Rules */}
-      <div className="border-t border-[#161616] pt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="border-t border-[var(--border-color)] pt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
         <div>
           <span className="font-mono-tabular text-xs font-bold block mb-2 opacity-60 uppercase">
             Rule 01 // Global Provenance
@@ -69,7 +69,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onBackToIndex }) => 
       </div>
 
       {/* Credits */}
-      <div className="border-t border-[#161616] pt-8 flex flex-col sm:flex-row justify-between items-start sm:items-center text-xs font-mono-tabular opacity-75 gap-4">
+      <div className="border-t border-[var(--border-color)] pt-8 flex flex-col sm:flex-row justify-between items-start sm:items-center text-xs font-mono-tabular opacity-75 gap-4">
         <div>
           A project by X-Team, part of VML UK.
         </div>

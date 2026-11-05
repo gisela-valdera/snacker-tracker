@@ -92,7 +92,7 @@ export const StarRating: React.FC<StarRatingProps> = ({
         className={`flex items-center gap-1 ${
           hasRated
             ? 'cursor-default'
-            : 'cursor-pointer focus-visible:outline-2 focus-visible:outline-[#161616]'
+            : 'cursor-pointer focus-visible:outline-2 focus-visible:outline-[var(--fg)]'
         }`}
       >
         {[1, 2, 3, 4, 5].map((starIdx) => {
@@ -136,8 +136,8 @@ export const StarRating: React.FC<StarRatingProps> = ({
                 {/* Star geometry: crisp, square-edged, sharp brutalist aesthetic */}
                 <polygon
                   points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"
-                  fill={isFull ? '#161616' : 'none'}
-                  stroke="#161616"
+                  fill={isFull ? 'var(--fg)' : 'none'}
+                  stroke="var(--fg)"
                   strokeWidth="2"
                   strokeLinejoin="miter"
                   strokeLinecap="square"
@@ -147,8 +147,8 @@ export const StarRating: React.FC<StarRatingProps> = ({
                 {isHalf && (
                   <polygon
                     points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"
-                    fill="#161616"
-                    stroke="#161616"
+                    fill="var(--fg)"
+                    stroke="var(--fg)"
                     strokeWidth="2"
                     strokeLinejoin="miter"
                     strokeLinecap="square"
@@ -162,7 +162,7 @@ export const StarRating: React.FC<StarRatingProps> = ({
       </div>
 
       {/* Side Label: Average and count or "No ratings yet" */}
-      <div className="font-mono-tabular text-xs whitespace-nowrap text-[#161616]">
+      <div className="font-mono-tabular text-xs whitespace-nowrap text-[var(--fg)]">
         {count > 0 ? (
           <span>
             <strong className="font-bold">{average}</strong>

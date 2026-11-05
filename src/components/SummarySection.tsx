@@ -4,11 +4,13 @@ import { Snack } from '../types.ts';
 interface SummarySectionProps {
   snacks: Snack[];
   isLoading: boolean;
+  onViewStats?: () => void;
 }
 
 export const SummarySection: React.FC<SummarySectionProps> = ({
   snacks,
   isLoading,
+  onViewStats,
 }) => {
   // Compute top contributor
   const contributorCounts = snacks.reduce<Record<string, number>>((acc, s) => {
@@ -38,24 +40,36 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
     : 'No ratings yet';
 
   return (
-    <footer className="mt-16 pt-8 border-t-2 border-[#161616]">
+    <footer className="mt-16 pt-8 border-t-2 border-[var(--border-color)]">
       {/* Primary Curatorial Ledger Statement */}
-      <div className="text-[17px] md:text-[22px] font-bold tracking-tight mb-4 leading-snug">
-        {isLoading ? (
-          <span>Synchronizing with Cloud Firestore archive...</span>
-        ) : snacks.length > 0 ? (
-          <span>
-            Total {snacks.length} items logged [*]. Top contributor: {topContributor} ({topContributorCount} entries) [**]. Origin count: {uniqueOrigins} countries. Department score: {avgRatingDisplay}.
-          </span>
-        ) : (
-          <span>
-            Archive is clean with 0 entries logged. Awaiting first submission [*].
-          </span>
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
+        <div className="text-[17px] md:text-[22px] font-bold tracking-tight leading-snug">
+          {isLoading ? (
+            <span>Synchronizing with Cloud Firestore archive...</span>
+          ) : snacks.length > 0 ? (
+            <span>
+              Total {snacks.length} items logged [*]. Top contributor: {topContributor} ({topContributorCount} entries) [**]. Origin count: {uniqueOrigins} countries. Department score: {avgRatingDisplay}.
+            </span>
+          ) : (
+            <span>
+              Archive is clean with 0 entries logged. Awaiting first submission [*].
+            </span>
+          )}
+        </div>
+
+        {onViewStats && snacks.length > 0 && (
+          <button
+            type="button"
+            onClick={onViewStats}
+            className="shrink-0 text-xs font-mono-tabular font-bold uppercase underline hover:bg-[var(--fg)] hover:text-[var(--bg)] px-2 py-1 border border-[var(--border-color)] transition-colors cursor-pointer"
+          >
+            [View Analytics & Charts →]
+          </button>
         )}
       </div>
 
       {/* Grid of Micro-Metrics in Swiss Layout */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 py-4 my-4 border-y border-[#161616]/30 text-xs font-mono-tabular">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 py-4 my-4 border-y border-[var(--border-subtle)] text-xs font-mono-tabular">
         <div>
           <span className="opacity-60 block uppercase">Sweet</span>
           <span className="text-base font-bold">{sweetCount}</span>
